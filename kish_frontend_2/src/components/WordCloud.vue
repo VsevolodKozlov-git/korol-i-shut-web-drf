@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive, ref} from 'vue';
+import { onMounted, reactive, ref, watch} from 'vue';
 import type { Ref } from 'vue'
 import axios from 'axios';
 import WordCloud from 'wordcloud';
@@ -31,7 +31,15 @@ const nounsElement: Ref<null | HTMLElement> = ref(null);
 const adjectivesElement: Ref<null | HTMLElement> = ref(null);
 const verbsElement: Ref<null | HTMLElement> = ref(null);
 
+const props = defineProps<{
+startYear: number,
+endYear: number
+}>()
 
+watch(() => [props.startYear, props.endYear], async () => {
+  await fetchWordFrequency()
+  initWordCloud();
+});
 
 const elementAndType: [Ref<null | HTMLElement>, string][] = [
   [allElement, 'all'], 
@@ -97,7 +105,9 @@ async function fetchWordFrequency() {
     let data: FreqDict
     try {
       const response = await axios.get<FreqDict>(`http://127.0.0.1:8000/app/word_cloud/word_frequency`, {
-        params: { tag_type: tagType }
+        params: { 
+          tag_type: tagType
+        }
       });
       data = response.data;
       let freqTuple: ListEntry[] = transformFrequencyToTuple(data)
@@ -125,6 +135,7 @@ async function fetchWordColor() {
 
 
 function initWordCloud() {
+  console.log(wordFrequency['all'])
   if (
     wordColor.value === null
   ){

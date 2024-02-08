@@ -50,7 +50,6 @@ const emit = defineEmits<{
 
 function changStartYear(year: number): void {
   startYear.value = year;
-  console.log(startYear.value);
 }
 
 function changeEndYear(year: number): void {
@@ -75,6 +74,7 @@ let endYear: Ref<number> = ref(consts.maxYear);
 watch( [startYear, endYear], 
   ([newStartYear, newEndYear], [oldStartYear, oldEndYear]) => {
     swapStartEndIfNeeded(newStartYear, newEndYear)
+    emitIfNeeded(newStartYear, newEndYear, oldStartYear, oldEndYear);
 })
 
 function swapStartEndIfNeeded(newStartYear: number, newEndYear: number): void {
@@ -90,14 +90,13 @@ function emitIfNeeded(
   oldStartYear: number,
   oldEndYear: number
 ){
-  if (newStartYear != oldEndYear) {
+  if (newStartYear != oldStartYear) {
     emit("updateStartYear", newStartYear);
+  }
+  if (newEndYear!= oldEndYear) {
     emit("updateEndYear", newEndYear);
   }
 }
-
-
-
 
 let selectedAlbums = computed(() => 
   consts.albums.filter(
