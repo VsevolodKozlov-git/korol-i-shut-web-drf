@@ -3,7 +3,7 @@
   <div class="select-button-title">Год начала</div>
     <button 
       v-for="year in consts.albumYears" :key="year"
-      @click="changStartYear(year)"
+      @click="startYear = year"
       class="select-button"
       :class = "{'button-active' : year === startYear}"
       :title="getHoverTextByYear(year)"
@@ -15,7 +15,7 @@
   <div class="select-button-title">Год конца</div>
   <button 
       v-for="year in consts.albumYears" :key="year"
-      @click="changeEndYear(year)"
+      @click="endYear = year"
       class="select-button"
       :class = "{'button-active' : year === endYear}"
       :title="getHoverTextByYear(year)"
@@ -48,14 +48,6 @@ const emit = defineEmits<{
   updateEndYear: [year: number]
 }>()
 
-function changStartYear(year: number): void {
-  startYear.value = year;
-}
-
-function changeEndYear(year: number): void {
-  endYear.value = year;
-}
-
 function getHoverTextByYear(year: number): string {
   let hoverText = "";
   consts.albums.forEach(album => {
@@ -76,6 +68,8 @@ watch( [startYear, endYear],
     swapStartEndIfNeeded(newStartYear, newEndYear)
     emitIfNeeded(newStartYear, newEndYear, oldStartYear, oldEndYear);
 })
+
+
 
 function swapStartEndIfNeeded(newStartYear: number, newEndYear: number): void {
   if (newStartYear > newEndYear) {
