@@ -1,9 +1,8 @@
 <template>
   <Slider 
-  @update-start-year="(year: number) => startYear=year"
-  @update-end-year="(year: number) => endYear=year"/>
-  <SentimentVizulization :start-year="startYear" :end-year="endYear"/>
-  </template> 
+@update-albums="(newAlbums: string[]) => albumsTitles=newAlbums"/>
+  <SentimentVizulization :albumsTitles="albumsTitles"/>
+</template> 
   
   
   <script setup lang="ts">
@@ -12,7 +11,6 @@
   import * as consts from "@/modules/consts"
   import { ref } from 'vue';
   
-  const startYear = ref(consts.minYear);
-  const endYear = ref(consts.maxYear);
+  const albumsTitles = ref(consts.albums.map(album => album.title))
   
   </script>

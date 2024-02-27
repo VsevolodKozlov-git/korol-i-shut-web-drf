@@ -1,6 +1,13 @@
 <template>
-<div ref="cntPlotElement"></div>
-<div ref="probabilitiesPlotElement"></div>
+
+<v-card class="ma-10">
+  <div ref="cntPlotElement"></div>
+</v-card>
+
+<v-card class="ma-10">
+  <div ref="probabilitiesPlotElement"></div>
+</v-card>
+
 
 </template>
 
@@ -10,7 +17,7 @@ import { onMounted, ref, watch} from 'vue';
 import type { Ref } from 'vue'
 import axios from 'axios';
 import Plotly from 'plotly.js-dist-min'
-import type {Data, Layout} from 'plotly.js-dist-min';
+import type {Data, Layout, Template} from 'plotly.js-dist-min';
 
 
 const cntPlotElement: Ref<null | HTMLElement> = ref(null);
@@ -28,11 +35,10 @@ onMounted(async () => {
 });
 
 const props = defineProps<{
-startYear: number,
-endYear: number
+albumsTitles: string[]
 }>()
 
-watch(() => [props.startYear, props.endYear], async () => {
+watch(() => props.albumsTitles, async () => {
   onUpdate();
 });
 
@@ -50,16 +56,84 @@ interface SongEntryFromGet{
 }
 
 
+const darkThemeTemplate = {
+  layout: {
+    paper_bgcolor: '#323232', // Background color of the outer area
+    plot_bgcolor: '#323232', // Background color of the plotting area
+    font: {
+      color: '#7f7f7f' // Color of all the text
+    },
+    colorway: ['#2ca02c', '#1f77b4', '#ff7f0e', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf'], // Default set of colors for plots
+    title: {
+      font: {
+        color: '#FFFFFF' // Specific color for title text
+      }
+    },
+    xaxis: {
+      tickfont: {
+        color: '#7f7f7f'
+      },
+      title: {
+        font: {
+          color: '#7f7f7f'
+        }
+      }
+    },
+    yaxis: {
+      tickfont: {
+        color: '#7f7f7f'
+      },
+      title: {
+        font: {
+          color: '#7f7f7f'
+        }
+      }
+    },
+    legend: {
+      font: {
+        color: '#7f7f7f'
+      }
+    }
+  }
+};
+
+
+function mergeLayouts(mainLayout:Partial<Layout>, themeLayout: Partial<Layout>): Partial<Layout>  {
+    function mergeObjects(obj1:any, obj2:any) {
+        Object.keys(obj2).forEach(key => {
+            if (obj1.hasOwnProperty(key) && typeof obj1[key] === 'object' && typeof obj2[key] === 'object') {
+                mergeObjects(obj1[key], obj2[key]);
+            } else if (!obj1.hasOwnProperty(key)) {
+                obj1[key] = obj2[key];
+            }
+        });
+    }
+
+    // Create a deep clone of the mainLayout to avoid modifying the original object
+    let mergedLayout = JSON.parse(JSON.stringify(mainLayout));
+
+    mergeObjects(mergedLayout, themeLayout);
+
+    return mergedLayout;
+}
+
 const fetchedSongsSentiment: Ref<SongEntryFromGet[] | null> = ref(null);
 
 
 // Function to fetch word frequency
 async function fetchSongsSentiment() {
+  let albumsTitles;
+  if (props.albumsTitles.length > 0) {
+    albumsTitles = props.albumsTitles.join() 
+  }
+  else {
+    albumsTitles = 'sampletext'
+  }
+  
   try {
       const response = await axios.get<SongEntryFromGet[]>(`http://127.0.0.1:8000/app/vizualization/sentiment`, {
         params: { 
-          year_min: props.startYear,
-          year_max: props.endYear
+          albums_titles: albumsTitles
         }
       });
       fetchedSongsSentiment.value = response.data;
@@ -111,10 +185,15 @@ function createSongCountPlot(){
     yaxis: {
       title: 'Количество песен',
     },
-    title: 'Распределение песен по эмоциональной окраске'
-    
+    title: {
+      text:'Распределение песен по эмоциональной окраске'
+
+    }
   }
-  Plotly.newPlot(cntPlotElement.value, data, layout);
+
+  const mergedLayouts = mergeLayouts(layout, darkThemeTemplate.layout);
+
+  Plotly.newPlot(cntPlotElement.value, data, mergedLayouts);
 }
 
 
@@ -194,7 +273,9 @@ function createProbabilitiesPlot() {
   ];
 
   const layout: Partial<Layout> = {
-    title: 'Вероятность отнесения песни к эмоциональной окраске',
+    title:{
+      text: 'Вероятность отнесения песни к эмоциональной окраске'
+    },
     grid: {
       rows: 1, 
       columns: 3, 
@@ -206,7 +287,8 @@ function createProbabilitiesPlot() {
     yaxis: {title: 'Количество песен'},
     showlegend: false
   };
-  Plotly.newPlot(probabilitiesPlotElement.value, data, layout);
+  const mergedLayout = mergeLayouts(layout, darkThemeTemplate.layout)
+  Plotly.newPlot(probabilitiesPlotElement.value, data, mergedLayout);
 }
 
 function getSentimentList(sentiment: 'negative'| 'positive'| 'neutral'): number[] {

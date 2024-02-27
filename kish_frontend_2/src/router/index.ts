@@ -10,8 +10,13 @@ const router = createRouter({
       component: () => import('../views/testAxios.vue')
     },
     {
-      path: '/vizualization',
-      name: 'vizualization',
+      path: '/',
+      name: 'root',
+      component: () => import('../views/Root.vue')
+    },
+    {
+      path: '/wordcloud',
+      name: 'wordcloud',
       component: () => import('../views/Vizualization.vue')
     },
     {

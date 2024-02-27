@@ -1,8 +1,7 @@
 <template>
 <Slider 
-@update-start-year="(year: number) => startYear=year"
-@update-end-year="(year: number) => endYear=year"/>
-<WordCloud :start-year="startYear" :end-year="endYear"></WordCloud>
+@update-albums="(newAlbums: string[]) => albumsTitles=newAlbums"/>
+<WordCloud :albums="albumsTitles"></WordCloud>
 </template> 
 
 
@@ -13,7 +12,7 @@ import * as consts from "@/modules/consts"
 
 import { ref, computed, watch } from 'vue';
 
-const startYear = ref(consts.minYear);
-const endYear = ref(consts.maxYear);
+const albumsTitles = ref(consts.albums.map(album => album.title))
+
 
 </script>

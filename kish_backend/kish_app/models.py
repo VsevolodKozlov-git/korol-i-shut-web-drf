@@ -17,6 +17,11 @@ class Song(models.Model):
     adjectives = ArrayField(models.CharField(max_length=word_max_length))
     verbs = ArrayField(models.CharField(max_length=word_max_length))
     nouns = ArrayField(models.CharField(max_length=word_max_length))
+    negative = models.FloatField(null=False)
+    positive = models.FloatField(null=False)
+    neutral = models.FloatField(null=False)
+
+
 
     def __str__(self):
         return f'"{self.title}" {self.album}'

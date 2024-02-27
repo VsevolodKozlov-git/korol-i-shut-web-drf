@@ -1,25 +1,68 @@
 <template>
 
-<div class="font-size" v-if="referenceWords">
-  <table>
-    <tr>
-      <th>Слово</th>
-      <th>Количество</th>
-    </tr>
-    <tr v-for="refrenceWord, index in referenceWords" :key="index">
-      <td :style="{
-      color: refrenceWord.color,
-      fontSize: refrenceWord.fontSize+'pt',
-      lineHeight: refrenceWord.fontSize +'pt'
+
+<v-card v-if="referenceWords" class="reference-words" color="#323232">
+    <table class="word-table">
+      <tr>
+        <th class="pr-10">Слово</th>
+        <th>Количество повторений</th>
+      </tr>
+
+      <tr v-for="refrenceWord, index in referenceWords" :key="index"
+      :style="{
+        color: refrenceWord.color,
+        fontSize: refrenceWord.fontSize+'pt',
+        lineHeight: refrenceWord.fontSize +'pt'
       }">
-        {{refrenceWord.word}}
-      </td>
-      <td>{{refrenceWord.count}}</td>
-    </tr>
-  </table>
+        <td class="pr-10">{{refrenceWord.word}}</td>
+        <td class="word-row">{{refrenceWord.count}}</td>
+      </tr>
+    </table>
+</v-card>
+
+<div class="container">
+  <div class="element">
+    <div class="word-cloud-title">Все слова</div>
+    <div ref="allElement" class="word-cloud-canvas"></div>
+  </div>
+
+  <div class="element">
+    <div class="word-cloud-title">Существительные</div>
+    <div ref="nounsElement" class="word-cloud-canvas"></div>
+  </div>
+
+  <div class="element">
+    <div class="word-cloud-title">Глаголы</div>
+    <div ref="verbsElement" class="word-cloud-canvas"></div>
+  </div>
+
+  <div class="element">
+    <div class="word-cloud-title">Прилагательные</div>
+    <div ref="adjectivesElement" class="word-cloud-canvas"></div>
+  </div>
 </div>
 
-<div class="word-cloud-card">
+
+<!-- <v-container>
+  <div>
+    <div class="word-cloud-title">Все слова</div>
+    <canvas ref="allElement" width="800px" height="400px"></canvas>
+  </div>
+
+  <div>
+    <div class="word-cloud-title">Существительные</div>
+  <canvas ref="nounsElement" width="800px" height="400px"></canvas>
+  </div>
+  
+
+  <div class="word-cloud-title">Глаголы</div>
+  <canvas ref="verbsElement" width="800px" height="400px"></canvas>
+
+  <div class="word-cloud-title">Прилагалтельные</div>
+  <canvas ref="adjectivesElement" width="800px" height="400px"></canvas>
+</v-container> -->
+<!-- <div class="word-cloud-card" >
+
     <div class="word-cloud-title">Все слова</div>
     <canvas ref="allElement" width="800px" height="400px"></canvas>
 
@@ -33,7 +76,7 @@
     <canvas ref="adjectivesElement" width="800px" height="400px"></canvas>
 
     
-</div>
+</div> -->
 </template>
 
 <script setup lang="ts">
@@ -60,11 +103,12 @@ interface ReferenceWord{
 let referenceWords: Ref<ReferenceWord[] | null> = ref(null);
 
 const props = defineProps<{
-startYear: number,
-endYear: number
+// startYear: number,
+// endYear: number,
+albums: string[] 
 }>()
 
-watch(() => [props.startYear, props.endYear], async () => {
+watch(() => props.albums, async () => {
   await fetchWordFrequency()
   initWordCloud();
   initReferenceWords();
@@ -116,6 +160,13 @@ function transformFrequencyToTuple(freqDict: FreqDict): ListEntry[] {
 
 // Function to fetch word frequency
 async function fetchWordFrequency() {
+  let albumsTitles;
+  if (props.albums.length > 0) {
+    albumsTitles = props.albums.join() 
+  }
+  else {
+    albumsTitles = 'sampletext'
+  }
 
   for (const tagType of tagTypes) {
     let data: FreqDict
@@ -123,13 +174,11 @@ async function fetchWordFrequency() {
       const response = await axios.get<FreqDict>(`http://127.0.0.1:8000/app/word_cloud/word_frequency`, {
         params: { 
           tag_type: tagType,  
-          year_min: props.startYear,
-          year_max: props.endYear
+          albums_titles: albumsTitles
         }
       });
       data = response.data;
       let freqTuple: ListEntry[] = transformFrequencyToTuple(data)
-      console.log(freqTuple);
       wordFrequency[tagType as keyof WordFrequency] = freqTuple;
     } catch (error) {
       if (axios.isAxiosError(error)){
@@ -220,7 +269,7 @@ function initWordCloud() {
       {
         list: wordList,
         color: (word) => wordColor.value![word],
-        backgroundColor: '#2b2b2b',
+        backgroundColor: '#323232',
         gridSize: 5,
         weightFactor: weightFactor,
         fontFamily: "sans-serif",
@@ -286,9 +335,9 @@ body {
 
 .word-cloud-title {
   font-weight: bold;
-  font-size: 1.2em;
+  font-size: 20px;
   text-align: center;
-  text-decoration: underline;
+  
 }
 
 #word-cloud-canvas-hover-box {
@@ -310,4 +359,34 @@ body {
     text-shadow: 0 0 10px, 0 0 10px #fff, 0 0 10px #fff, 0 0 10px #fff;
     opacity: 0.5;
   }
+
+.word-table{
+  text-align: center;
+}
+.word-row{
+  padding: 0 10 0 10;
+}
+
+.reference-words {
+  width: fit-content;
+   margin-left: auto; 
+   margin-right: auto;
+   padding: 0 20px;
+}
+
+.container{
+  display: flex;
+  flex-flow: row wrap;;
+  justify-content: center;
+  align-items: center;
+}
+
+.word-cloud-canvas{
+  width: 800px;
+  height: 400px;
+}
+
+.element{
+  padding: 10px 20px;
+}
 </style>
