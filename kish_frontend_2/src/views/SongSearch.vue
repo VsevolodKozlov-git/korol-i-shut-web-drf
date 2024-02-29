@@ -1,32 +1,39 @@
 <template>
 <v-card class="ma-10">
   <v-sheet class="ma-5">
-    <div class="text-h5 mb-1">Песня о:</div>
-    <v-form>
-      <div class="container ml-2">
-        <v-sheet width="800">
-          <v-text-field
-          v-model="userQuery"
-          required
-          hide-details
-        />
-        </v-sheet>
-        <v-icon @click="fetchMatches" class="ml-3">
-            mdi-magnify
-        </v-icon>
-      </div>
-    </v-form>
+    <v-container>
+
+      <div class="text-h5 mb-1">Песня о:</div>
+
+      <v-form 
+        class="ma-3"
+        style="display: flex; align-items: center;"
+      >
+          <v-sheet width="800">
+              <v-text-field
+              v-model="userQuery"
+              required
+              hide-details
+            />
+            </v-sheet>
+            <v-icon @click="fetchMatches" class="ml-3">
+                mdi-magnify
+            </v-icon>
+      </v-form>
+    </v-container> 
   </v-sheet>
 </v-card>
 
 
+
 <v-card v-if="songMatches" class="ma-10">
-  <div class="text-h4  ma-4">Лучшие совпадения:</div>
+  <v-container>
+  <div class="text-h4 ">Лучшие совпадения:</div>
   <div v-for="songMatch, index in songMatches" :key="index">
     <v-btn 
       @click="isLyricsVisible![index] = !isLyricsVisible![index]"
       :class="{'button-active': isLyricsVisible![index]}" 
-      style="display: block; width: 500px;"
+      style="width: 500px;"
       class="ma-4"
       color="#323232"
     >
@@ -47,26 +54,8 @@
       </v-card>
     </v-expand-transition>
   </div>
+  </v-container>
 </v-card>
-
-
-<!-- <div v-if="songMatches">
-  <div v-for="songMatch, index in songMatches" :key="index">
-    
-    <div class="song-title" @click="isLyricsVisible![index] = !isLyricsVisible![index]">
-      {{ songMatch.title }}
-    </div>
-
-    <div class="song-lyrics-container">
-      <div :class="{'active': isLyricsVisible![index], 'song-lyrics': true}">
-        <div v-for="line, index in songMatch.lyrics" :key="index">
-          {{ line }}
-        </div>
-      </div>
-    </div>
-
-  </div>
-</div> -->
 </template>
 
 <script setup lang="ts">

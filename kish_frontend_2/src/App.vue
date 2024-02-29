@@ -6,10 +6,12 @@
 
     
     <v-app-bar-title>
+      <a :href="getHref('root')">
       <div style="display: flex; flex-direction: row; align-items: center;">
         <h3 class="text-h4">Анализ творчества КиШ</h3>
-        <img src="@/assets/panki_hoi.svg" alt="" style="height:60px; margin-right:16px;">
+        <img src="@/assets/panki_hoi.svg" alt="" style="height:60px; margin-left:16px;">
       </div>
+    </a>
     </v-app-bar-title>
   </v-app-bar>
 
@@ -61,4 +63,8 @@ const drawer: Ref<boolean> = ref(true)
 
 <style scoped>
 
+a{
+  color: inherit; /* blue colors for links too */
+  text-decoration: inherit;
+}
 </style>
