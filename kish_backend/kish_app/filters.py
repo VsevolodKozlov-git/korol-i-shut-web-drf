@@ -16,7 +16,6 @@ class FilterSongs(filters.FilterSet):
         fields = ['album']
 
 
-
 class CustomFilter(ABC):
     def __init__(self, request):
         self.errors = []
@@ -35,7 +34,7 @@ class TagTypeFilter(CustomFilter):
         'all': 'tokens',
         'adjectives': 'adjectives',
         'nouns': 'nouns',
-        'verbs': 'verbs'
+        'verbs': 'verbs',
     }
 
     def handle_request(self, request):
@@ -43,18 +42,22 @@ class TagTypeFilter(CustomFilter):
         tag_type = request.query_params.get('tag_type')
         # error handling
         if tag_type is None:
-            self.errors.append({
-                'type': "get_parameter_error",
-                "detail": 'not provided tag_type in get request parameters',
-                'instance': url
-            })
+            self.errors.append(
+                {
+                    'type': "get_parameter_error",
+                    "detail": 'not provided tag_type in get request parameters',
+                    'instance': url,
+                }
+            )
             return
         if tag_type not in self.parameter_to_data.keys():
-            self.errors.append({
-                'type': "get_parameter_error",
-                "detail": "tag type should be one of the following ['all', 'nouns', 'verbs', 'adjectives']",
-                'instance': url
-            })
+            self.errors.append(
+                {
+                    'type': "get_parameter_error",
+                    "detail": "tag type should be one of the following ['all', 'nouns', 'verbs', 'adjectives']",
+                    'instance': url,
+                }
+            )
             return
 
         self.data = self.parameter_to_data[tag_type]

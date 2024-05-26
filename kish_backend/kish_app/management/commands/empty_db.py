@@ -15,11 +15,7 @@ class Command(BaseCommand):
             cursor.execute(f"ALTER SEQUENCE {sequence_name} RESTART WITH 1;")
 
     def handle(self, *args, **options):
-        models_to_empty = [
-            models.Song,
-            models.WordRating,
-            models.Album
-        ]
+        models_to_empty = [models.Song, models.WordRating, models.Album]
         for model in models_to_empty:
             print(f'emptying {model}')
             self.empty_table(model)

@@ -10,6 +10,7 @@ class AlbumSerializer(serializers.ModelSerializer):
 
 class SongSentimentSerializer(serializers.ModelSerializer):
     album = AlbumSerializer()
+
     class Meta:
         model = models.Song
         fields = ['title', 'album', 'negative', 'positive', 'neutral']

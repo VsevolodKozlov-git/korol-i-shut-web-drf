@@ -12,12 +12,11 @@ class Command(BaseCommand):
             album_id = row['album_id'] + 1
 
             title = row['title']
-            songs = models.Song.objects.filter(
-                album__pk=album_id,
-                title=title
-            )
+            songs = models.Song.objects.filter(album__pk=album_id, title=title)
             if len(songs) > 1:
-                raise CommandError(f'Для title: {title}, album_id: {album_id} больше 1-й песни')
+                raise CommandError(
+                    f'Для title: {title}, album_id: {album_id} больше 1-й песни'
+                )
             song = songs[0]
             song.positive = row['positive']
             song.negative = row['negative']

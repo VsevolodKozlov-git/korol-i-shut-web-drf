@@ -23,22 +23,22 @@
 <div class="container">
   <div class="element">
     <div class="word-cloud-title">Все слова</div>
-    <div ref="allElement" class="word-cloud-canvas"></div>
+    <canvas width="800px" height="400px" ref="allElement" class="word-cloud-canvas"></canvas>
   </div>
 
   <div class="element">
     <div class="word-cloud-title">Существительные</div>
-    <div ref="nounsElement" class="word-cloud-canvas"></div>
+    <canvas width="800px" height="400px" ref="nounsElement" class="word-cloud-canvas"></canvas>
   </div>
 
   <div class="element">
     <div class="word-cloud-title">Глаголы</div>
-    <div ref="verbsElement" class="word-cloud-canvas"></div>
+    <canvas width="800px" height="400px" ref="verbsElement" class="word-cloud-canvas"></canvas>
   </div>
 
   <div class="element">
     <div class="word-cloud-title">Прилагательные</div>
-    <div ref="adjectivesElement" class="word-cloud-canvas"></div>
+    <canvas width="800px" height="400px" ref="adjectivesElement" class="word-cloud-canvas"></canvas>
   </div>
 </div>
 
